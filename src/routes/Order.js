@@ -4,25 +4,52 @@ const Product = require("../models/ProductModel");
 const auth = require("../Middleware/Auth");
 const router = express.Router();
 
-router.post("/orders", async (req, res) => {
-  console.log(req.body);
-  try {
-    const order = new Order({
-      fullname: req.body.customer_name,
-      email: req.body.customer_email,
-      contact: req.body.customer_contact,
-      shippingAddress: req.body.customer_shipping_address,
-      products: req.body.products,
-      total: req.body.total
+
+const calculateTotals = (products) => {
+  const productsTotalsPromises = products.map(async product => {
+    const productRes = await Product.findById(product._id);
+    return productRes.product_unit_price * product.quantity;
+  });
+
+  Promise.all(productsTotalsPromises).then(response => {
+    const total = response.reduce((a, b) => {
+      return a + b
     });
-    const norder = await order.save();
-    console.log(norder);
-    // const myOrder = await norder.addProducts(req.body);
-    if (!norder) {
-      // console.log("FAiling");
-      return res.status(401).send();
-    }
-    res.status(201).send(norder);
+    console.log(total)
+  })
+}
+
+router.post("/orders", async (req, res) => {
+  try {
+
+    const productsTotalsPromises = req.body.products.map(async product => {
+      const productRes = await Product.findById(product._id);
+      return productRes.product_unit_price * product.quantity;
+    });
+    console.log(productsTotalsPromises)
+    Promise.all(productsTotalsPromises).then(async response => {
+      const total = response.reduce((a, b) => {
+        return a + b
+      });
+      console.log(total)
+      const order = new Order({
+        fullname: req.body.customer_name,
+        email: req.body.customer_email,
+        contact: req.body.customer_contact,
+        shippingAddress: req.body.customer_shipping_address,
+        products: req.body.products,
+        total
+      });
+      const norder = await order.save();
+      console.log(norder);
+      // const myOrder = await norder.addProducts(req.body);
+      if (!norder) {
+        // console.log("FAiling");
+        return res.status(401).send();
+      }
+      res.status(201).send(norder);
+    });
+
   } catch (err) {
     res.status(500).send(err);
   }
