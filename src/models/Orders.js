@@ -45,7 +45,7 @@ const OrderSchema = new mongoose.Schema({
   }
 });
 
-OrderSchema.methods.addProducts = async function(products) {
+OrderSchema.methods.addProducts = async function (products) {
   const order = this;
   console.log(products);
   products.products.forEach(product => {
