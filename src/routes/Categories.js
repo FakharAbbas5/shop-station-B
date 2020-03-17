@@ -1,12 +1,12 @@
 const express = require("express");
-const Category = require("../models/CategoryModel");
+const Category = require("../models/Categories");
 const multer = require("multer");
 
 const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: "./categories_images/",
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     cb(null, file.originalname);
   }
 });
@@ -16,7 +16,7 @@ const upload = multer({
   limits: {
     fileSize: 1024 * 1024 * 2
   },
-  fileFilter: function(req, file, cb) {
+  fileFilter: function (req, file, cb) {
     if (
       file.mimetype === "image/png" ||
       file.mimetype === "image/jpeg" ||
