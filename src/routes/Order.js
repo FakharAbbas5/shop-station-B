@@ -5,20 +5,6 @@ const auth = require("../Middleware/Auth");
 const router = express.Router();
 
 
-const calculateTotals = (products) => {
-  const productsTotalsPromises = products.map(async product => {
-    const productRes = await Product.findById(product._id);
-    return productRes.product_unit_price * product.quantity;
-  });
-
-  Promise.all(productsTotalsPromises).then(response => {
-    const total = response.reduce((a, b) => {
-      return a + b
-    });
-    console.log(total)
-  })
-}
-
 router.post("/orders", async (req, res) => {
   try {
 
