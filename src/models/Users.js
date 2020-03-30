@@ -33,7 +33,7 @@ const UserSchema = mongoose.Schema(
   }
 );
 
-UserSchema.methods.toJSON = function(req, res, next) {
+UserSchema.methods.toJSON = function (req, res, next) {
   const user = this;
   const userObject = user.toObject();
   delete userObject.tokens;
@@ -41,19 +41,19 @@ UserSchema.methods.toJSON = function(req, res, next) {
   return userObject;
 };
 
-UserSchema.methods.generateAuthToken = async function(next) {
+UserSchema.methods.generateAuthToken = async function (next) {
   const user = this;
 
   const token = await jwt.sign(
     { _id: user._id.toString() },
-    "thisisshopstation"
+    process.env.JWT_SECRET
   );
   user.tokens = user.tokens.concat({ token });
   await user.save();
   return token;
 };
 
-UserSchema.pre("save", async function(next) {
+UserSchema.pre("save", async function (next) {
   const user = this;
   if (user.isModified("Password")) {
     user.Password = await bcrypt.hash(user.Password, 8);

@@ -10,7 +10,7 @@ const app = express();
 const bodyParser = require("body-parser");
 
 app.use(cors());
-const port = process.env.PORT || 3001;
+const port = process.env.PORT;
 app.use(express.json());
 
 app.use("/products_images", express.static("products_images"));
@@ -25,7 +25,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-mongoose.connect("mongodb://127.0.0.1:27017/shop-station-db", {
+
+mongoose.connect(process.env.MONGODB_URL, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true
